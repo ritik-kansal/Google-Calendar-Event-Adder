@@ -18,43 +18,42 @@ def main():
     Uses Google API to create calander events.
     """
     service = get_service()
-    Excel_file_path = input("Enter the name of the excel file: ")
+    # Excel_file_path = input("Enter the name of the excel file: ")
+    Excel_file_path = "events.xlsx"
     while not path.isfile(Excel_file_path):
         print("The file name entered does not exist!")
         Excel_file_path = input("Enter the name of the excel file (make sure it is placed in the same folder): ")
-    sheet_index = int(input("Which sheet number in the file do you want to scan [1, 2, 3 etc.]: ")) - 1
-    key = input("Enter the name you want to search in the excel file: ")
+    # sheet_index = int(input("Which sheet number in the file do you want to scan [1, 2, 3 etc.]: ")) - 1
+    sheet_index = 0
+    # key = input("Enter the name you want to search in the excel file: ")
+    key = "testing"
 
     # Geting event data from the excel file
     events = event_helper.get_events(Excel_file_path, sheet_index, key)
 
     # Printing, creating and uploading events
     for eve in events:
-        (eventName, eventDate) = eve
+        (eventName,eventDesc, start,end) = eve
         event = {
             'summary': eventName,
+            'description':eventDesc,
             'start': {
-                "date": eventDate,
-                'timeZone': 'Asia/Dubai'
+                "dateTime": start,
+                'timeZone': 'Asia/Kolkata'
             },
             'end': {
-                "date": eventDate,
-                'timeZone': 'Asia/Dubai'
+                "dateTime":end,
+                'timeZone': 'Asia/Kolkata'
             },
             'reminders': {
-                'useDefault': False,
-                'overrides': [
-                    {'method': 'popup', 'minutes': 6 * 60},         # 6 hours
-                    {'method': 'popup', 'minutes': 1 * 24 * 60},    # 1 day
-                    {'method': 'popup', 'minutes': 2 * 24 * 60},    # 2 days
-                    {'method': 'popup', 'minutes': 3 * 24 * 60}     # 3 days
-                ],
+                'useDefault': True,
             },
-            'colorId': '3'
+            # 'colorId': '3'
         }
-
-        event = service.events().insert(calendarId='primary', body=event).execute()
-        print("\nEvent name = '", eventName, "', Event date = '", eventDate, "'", sep='')
+        # print(event)
+        # exit()
+        event = service.events().insert(calendarId='cac3rvkb7uo55bqiqja9cg9p3o@group.calendar.google.com', body=event).execute()
+        print("\nEvent name = '", eventName, "', Event start = '", start, "'", sep='')
         print("Event Link:", format(event.get('htmlLink')))
 
     if len(events) == 0:
